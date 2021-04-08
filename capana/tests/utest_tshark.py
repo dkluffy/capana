@@ -1,11 +1,16 @@
 import unittest
 import os,sys
-#sys.path.append(os.getcwd()) 
-sys.path.append("..") 
+
+print( os.getcwdb()  ) 
+sys.path.append(".") 
 
 from capana.application import tshark
 from capana.application.base import BackEnd
-eng  = tshark.Tshark('../a.pcapng')
+
+from capana.application.converts import conv_table,endpoits_table
+
+
+eng  = tshark.Tshark('a.pcapng')
 
 class TestDemo(unittest.TestCase):
     
@@ -19,7 +24,11 @@ class TestDemo(unittest.TestCase):
         self.assertEqual(0, L)
         #self.assertNotEqual(1, L)
     def test_conv(self):
-        print(eng._conv('ipv6'))
+        print(eng._conv('ipv6',format=conv_table))
+    
+    def test_conv2(self):
+        print(eng._conv('ipv6',conv_table))
+
     def test_abc(self):
         def call_eng(bd :BackEnd):
             #print(bd.table('tcpv4_payload'))

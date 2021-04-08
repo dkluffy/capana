@@ -9,7 +9,7 @@ def row_to_dict(row,columns):
     print(row,columns)
     raise BackEndError("row_to_dict: len(row) != len(columns)")
 
-def convert_conv_table(src):
+def conv_table(src):
         """
         src:
 
@@ -38,7 +38,7 @@ def convert_conv_table(src):
                 'sec_duration']
         return [ row_to_dict(r[0].split(),cols) for r in tab ]
 
-def convert_endpoits_table(src):
+def endpoits_table(src):
     """
     src:
     tshark -r a.pcapng -q -z endpoints,ip,ip.addr==192.168.2.155
@@ -62,3 +62,15 @@ def convert_endpoits_table(src):
             'rx_packets',
             'rx_bytes']
     return [ row_to_dict(r,cols) for r in tab ]
+
+#输出转换装饰函数
+def convert(func):
+    """
+    被装饰的函数调用的时候，必须带 format=*_tables（函数）参数
+    """
+    def call_format(*args,**kw_args):
+        ret = func(*args,**kw_args)
+        if 'format' in kw_args.keys():
+            return kw_args['format'](ret)
+        return ret
+    return call_format
