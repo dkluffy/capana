@@ -16,10 +16,15 @@ class Tshark(BackEnd):
         self.filters = filters
 
     def table(self,tablename,columns=None):
+        """
+        封装调用 Tshark.t_func_*
+        """
         return self._run_t_func(tablename)
 
     def _decode_to_json(self,layers,strict=False):
         """
+        直接把数据包转换为JSON格式，layers控制需要包含的字段
+        
         layers: string list ['tcp.port','tcp.payload']
             tcp
             tcp.port
@@ -61,6 +66,18 @@ class Tshark(BackEnd):
             return ret
         return temp_json
 
+    def get_payload_by_stream(self,stream_id: int):
+        """
+        extra payload  from output of _decode_to_json
+        """
+        pass
+
+    def get_payload_by_conv(self,conv_ips:list):
+        """
+        extra payload  from output of _decode_to_json
+        """
+        pass
+
     @convert
     def _conv(self,proto,format=table_type.conv_table):
         """
@@ -79,6 +96,8 @@ class Tshark(BackEnd):
         args = ['-q','-z',",".join(conv_strs)]
         return self._run(args)
 
+    #第二种用法，同@convert,但是不能在 调用_endpoints时控制输出的
+    #@table_wrapper(table_type=table_type.endpoits_table)
     @convert
     def _endpoints(self,proto,format=table_type.endpoits_table):
         """

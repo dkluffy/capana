@@ -10,33 +10,31 @@ def row_to_dict(row,columns):
     raise BackEndError("row_to_dict: len(row) != len(columns)")
 
 def conv_table(src):
-        """
-        src:
-
-        ================================================================================
-        IPv4 Conversations
-        Filter:ip.addr==192.168.2.147
-                                                       |       <-      | |       ->      | |     Total     |    Relative    |   Duration   |
-                                                       | Frames  Bytes | | Frames  Bytes | | Frames  Bytes |      Start     |              |
-        192.168.2.147        <-> 192.168.2.255              0 0bytes         10 2,294bytes      10 2,294bytes     8.149062000        49.9288
-        ================================================================================
-
-        return:
-            [dict,]
-        """
-        tab = [ r.split("\n") for r in src.split("\n")[5:-2] ]
-        cols = ['src',
-                'sig1',
-                'dst',
-                'frames_to_src',
-                'bytes_to_src',
-                'frames_to_dst',
-                'bytes_to_dst',
-                'frame_total',
-                'bytes_total',
-                'sec_relative',
-                'sec_duration']
-        return [ row_to_dict(r[0].split(),cols) for r in tab ]
+    """
+    src:
+    ================================================================================
+    IPv4 Conversations
+    Filter:ip.addr==192.168.2.147
+                                                   |       <-      | |       ->      | |     Total     |    Relative    |   Duration   |
+                                                   | Frames  Bytes | | Frames  Bytes | | Frames  Bytes |      Start     |              |
+    192.168.2.147        <-> 192.168.2.255              0 0bytes         10 2,294bytes      10 2,294bytes     8.149062000        49.9288
+    ================================================================================
+    return:
+        [dict,]
+    """
+    tab = [ r.split("\n") for r in src.split("\n")[5:-2] ]
+    cols = ['src',
+            'sig1',
+            'dst',
+            'frames_to_src',
+            'bytes_to_src',
+            'frames_to_dst',
+            'bytes_to_dst',
+            'frame_total',
+            'bytes_total',
+            'sec_relative',
+            'sec_duration']
+    return [ row_to_dict(r[0].split(),cols) for r in tab ]
 
 def endpoits_table(src):
     """
@@ -63,7 +61,7 @@ def endpoits_table(src):
             'rx_bytes']
     return [ row_to_dict(r,cols) for r in tab ]
 
-#输出转换装饰函数
+#输出转换装饰函数： 主要为了方便在
 def convert(func):
     """
     被装饰的函数调用的时候，必须带 format=*_tables（函数）参数
@@ -74,3 +72,16 @@ def convert(func):
             return kw_args['format'](ret)
         return ret
     return call_format
+
+#table_wrapper,同convert，但不能在调用的时候控制输出，因此不是很方便
+def table_wrapper(table_type=None):
+    def caller(func):
+        def inner(*args,**kw_args):
+            if table_type is None:
+                return func(*args,**kw_args)
+            return table_type(func(*args,**kw_args))
+        return inner
+    return caller
+
+
+
